@@ -1,6 +1,9 @@
+name: Sync fork with upstream
+
 on:
   schedule:
   - cron:  "0 0 1/7 * *"
+  workflow_dispatch:
 
 jobs:
   repo-sync:
