@@ -1,0 +1,68 @@
+# based on https://angeloavv.medium.com/how-to-distribute-flutter-desktop-app-binaries-using-github-actions-f8d0f9be4d6b
+
+name: Flutter CI
+
+# Controls when the workflow will run
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Runs a set of commands using the runners shell
+      - name: Customizing
+        run: |
+          chmod +x prepare
+          ./prepare
+      - name: Artefact customized version
+        uses: actions/upload-artifact@v3
+        with:
+          name: ECG-Medialib-Admin-Custom
+          path: mml.administration-app
+        
+  build-and-release-linux:
+    runs-on: ubuntu-latest
+    needs: [prepare]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: ECG-Medialib-Admin-Custom
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Install dependencies
+        run: sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libsecret-1-dev libjsoncpp-dev libsecret-1-0 libjsoncpp1
+      - name: Install project dependencies
+        run: flutter pub get
+      - name: Generate intermediates
+        run: |
+          flutter pub run build_runner build --delete-conflicting-outputs
+          flutter gen-l10n
+      - name: Enable linux build
+        run: flutter config --enable-linux-desktop
+      - name: Build artifacts
+        run: flutter build linux --release
+      - uses: actions-ecosystem/action-get-latest-tag@v1
+        id: l-get-latest-tag
+      - name: Archive Release
+        uses: thedoctor0/zip-release@master
+        with:
+          type: 'zip'
+          filename: ECG-Medialib-Admin-${{ steps.l-get-latest-tag.outputs.tag }}-linux.zip
+          directory: build/linux/x64/release/bundle
+      - name: Linux Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: build/linux/x64/release/bundle/ECG-Medialib-Admin-${{ steps.l-get-latest-tag.outputs.tag }}-linux.zip
+  #build-and-release-windows:
+  #build-and-release-macos:
