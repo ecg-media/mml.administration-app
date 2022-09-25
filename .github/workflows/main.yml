@@ -1,4 +1,5 @@
 # based on https://angeloavv.medium.com/how-to-distribute-flutter-desktop-app-binaries-using-github-actions-f8d0f9be4d6b
+# TODO auto incerment versions.
 
 name: Flutter CI
 
@@ -35,6 +36,7 @@ jobs:
           path: mml.administration-app.tar
         
   build-and-release-linux:
+    # TODO create linux rpm and debian packages
     runs-on: ubuntu-latest
     needs: [prepare]
     steps:
@@ -51,7 +53,6 @@ jobs:
         run: flutter pub get
       - name: Generate intermediates
         run: |
-          dart pub global activate flutter_to_debian
           flutter pub run build_runner build --delete-conflicting-outputs
           flutter gen-l10n
       - name: Enable linux build
@@ -59,8 +60,6 @@ jobs:
       - name: Build artifacts
         run: |
           flutter build linux --release
-          flutter_to_debian
-          ls debian/packages
       - name: Archive Release
         uses: thedoctor0/zip-release@master
         with:
