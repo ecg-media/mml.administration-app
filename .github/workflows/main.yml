@@ -51,12 +51,16 @@ jobs:
         run: flutter pub get
       - name: Generate intermediates
         run: |
+          dart pub global activate flutter_to_debian
           flutter pub run build_runner build --delete-conflicting-outputs
           flutter gen-l10n
       - name: Enable linux build
         run: flutter config --enable-linux-desktop
       - name: Build artifacts
-        run: flutter build linux --release
+        run: |
+          flutter build linux --release
+          flutter_to_debian
+          ls debian/packages
       - name: Archive Release
         uses: thedoctor0/zip-release@master
         with:
