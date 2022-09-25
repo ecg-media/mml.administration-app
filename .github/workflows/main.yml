@@ -21,11 +21,13 @@ jobs:
         run: |
           chmod +x customize
           ./customize
+      - name: Tar files
+        run: tar -cvf mml.administration-app.tar .
       - name: Artefact customized version
         uses: actions/upload-artifact@v3
         with:
           name: ECG-Medialib-Admin-Custom
-          path: .
+          path: mml.administration-app.tar
         
   build-and-release-linux:
     runs-on: ubuntu-latest
