@@ -15,6 +15,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+      - run: git fetch --tags -f
       - uses: actions-ecosystem/action-get-latest-tag@v1
         with:
           initial_version: '0.0.0'
