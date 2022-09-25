@@ -6,7 +6,7 @@ name: Flutter CI
 on:
   push:
     tags:
-      - "[0-9]+.[0-9]+.[0-9]+"
+      - "[0-9]+.[0-9]+.[0-9]+-ecg"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -19,13 +19,13 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Customizing
         run: |
-          chmod +x prepare
-          ./prepare
+          chmod +x customize
+          ./customize
       - name: Artefact customized version
         uses: actions/upload-artifact@v3
         with:
           name: ECG-Medialib-Admin-Custom
-          path: mml.administration-app
+          path: .
         
   build-and-release-linux:
     runs-on: ubuntu-latest
@@ -84,53 +84,50 @@ jobs:
       - name: Enable windows build
         run: flutter config --enable-windows-desktop
       - name: Build artifacts
-        run: flutter build windows --release
-      - name: Archive Release
-        uses: thedoctor0/zip-release@master
-        with:
-          type: 'zip'
-          filename: ECG-Medialib-Admin-${{github.ref_name}}-windows.zip
-          directory: build/windows/runner/Release
+        run: |
+          flutter build windows --release
+          flutter pub run msix:create
+          mv  build/windows/runner/Release/mml_admin.msix build/windows/runner/Release/ECG-Medialib-Admin-${{github.ref_name}}.msix 
       - name: Windows Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/windows/runner/Release/ECG-Medialib-Admin-${{github.ref_name}}-windows.zip
+          files: build/windows/runner/Release/ECG-Medialib-Admin-${{github.ref_name}}.msix 
   
-  build-and-release-macos:
-    runs-on: macos-latest
-    needs: [prepare]
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
-        with:
-          name: ECG-Medialib-Admin-Custom
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: 'stable'
-          flutter-version: '2.10.0'
-      - name: Install project dependencies
-        run: flutter pub get
-      - name: Generate intermediates
-        run: |
-          flutter pub run build_runner build --delete-conflicting-outputs
-          flutter gen-l10n
-      - name: Enable macOS build
-        run: flutter config --enable-macos-desktop
-      - name: Build artifacts
-        run: flutter build macos --release
-      - name: Archive Release
-        uses: thedoctor0/zip-release@master
-        with:
-          type: 'zip'
-          filename: ECG-Medialib-Admin-${{github.ref_name}}-macos.zip
-          directory: build/macos/Build/Products/Release
-      - name: macOS Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: build/macos/Build/Products/Release/ECG-Medialib-Admin-${{github.ref_name}}-macos.zip
+ # build-and-release-macos:
+ #   runs-on: macos-latest
+ #   needs: [prepare]
+ #   steps:
+ #     - uses: actions/checkout@v3
+ #     - uses: actions/download-artifact@v3
+ #       with:
+ #         name: ECG-Medialib-Admin-Custom
+ #     - uses: subosito/flutter-action@v1
+ #       with:
+ #         channel: 'stable'
+ #         flutter-version: '2.10.0'
+ #     - name: Install project dependencies
+ #       run: flutter pub get
+ #     - name: Generate intermediates
+ #       run: |
+ #         flutter pub run build_runner build --delete-conflicting-outputs
+ #         flutter gen-l10n
+ #     - name: Enable macOS build
+ #       run: flutter config --enable-macos-desktop
+ #     - name: Build artifacts
+ #       run: flutter build macos --release
+ #     - name: Archive Release
+ #       uses: thedoctor0/zip-release@master
+ #       with:
+ #         type: 'zip'
+ #         filename: ECG-Medialib-Admin-${{github.ref_name}}-macos.zip
+ #         directory: build/macos/Build/Products/Release
+ #     - name: macOS Release
+ #       uses: softprops/action-gh-release@v1
+ #       if: startsWith(github.ref, 'refs/tags/')
+ #       env:
+ #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+ #       with:
+ #         files: build/macos/Build/Products/Release/ECG-Medialib-Admin-${{github.ref_name}}-macos.zip
