@@ -17,7 +17,6 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions-ecosystem/action-get-latest-tag@v1
         with:
-          semver_only: true
           initial_version: '0.0.0'
         id: get-latest-tag
       # Runs a set of commands using the runners shell
@@ -25,6 +24,7 @@ jobs:
         run: |
           chmod +x customize
           ./customize
+          sed -i -E "s/version: .*/version: ${{ steps.get-latest-tag.outputs.tag }}/" "pubspec.yaml"
       - name: Tar files
         run: tar -cvf mml.administration-app.tar .
       - name: Artefact customized version
