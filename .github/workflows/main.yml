@@ -25,7 +25,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ECG-Medialib-Admin-Custom
-          path: ./**/*
+          path: .
         
   build-and-release-linux:
     runs-on: ubuntu-latest
