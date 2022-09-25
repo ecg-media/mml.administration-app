@@ -25,7 +25,6 @@ jobs:
         run: |
           chmod +x customize
           ./customize
-          sed -i -E "s/version: .*/version: ${{ steps.get-latest-tag.outputs.tag }}/" "pubspec.yaml"
       - name: Tar files
         run: tar -cvf mml.administration-app.tar .
       - name: Artefact customized version
