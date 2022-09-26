@@ -82,7 +82,7 @@ jobs:
           channel: 'stable'
       - name: Prepare sign key
         env:
-           PFX_CONTENT: ${{ secrets.BASE64_PFX_CONTENT }}
+           PFX_CONTENT: ${{ secrets.SIGN_KEY }}
         run: |
            $pfxPath = Join-Path -Path $env:RUNNER_TEMP -ChildPath "ecg_sign.pfx";
            $encodedBytes = [System.Convert]::FromBase64String($env:PFX_CONTENT);
