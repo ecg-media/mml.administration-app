@@ -99,7 +99,7 @@ jobs:
         run: flutter config --enable-windows-desktop
       - name: Build artifacts
         run: |
-          $version = ${{ steps.versioning.outputs.value }}
+          $version = ${{ github.ref_name }}
           $ver_dump = $version.replace('-ecg', '.0')
           flutter build windows --release
           flutter pub run msix:create --version $ver_dump -c ${{ steps.create-pfx.outputs.PFX_PATH }} -p ${{ secrets.SIGN_PASS }} -u ECG -b ${{ secrets.SIGN_SUB }}
