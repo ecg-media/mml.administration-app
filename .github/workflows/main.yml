@@ -81,15 +81,13 @@ jobs:
         with:
           channel: 'stable'
       - name: Prepare sign key
-        id: create-pfx
-        shell: pwsh
-    	  env:
-      	 PFX_CONTENT: ${{ secrets.SIGN_KEY }}
         run: |
            $pfxPath = Join-Path -Path $env:RUNNER_TEMP -ChildPath "ecg_sign.pfx";
-           $encodedBytes = [System.Convert]::FromBase64String($env:PFX_CONTENT);
+           $encodedBytes = [System.Convert]::FromBase64String(${{ secrets.SIGN_KEY }});
            Set-Content $pfxPath -Value $encodedBytes -AsByteStream;
            Write-Output "::set-output name=PFX_PATH::$pfxPath";
+        id: create-pfx
+        shell: pwsh
       - name: Setup Version
         uses: mad9000/actions-find-and-replace-string@2
         id: versioning
@@ -127,11 +125,8 @@ jobs:
         with:
           files: rel/ECG-Medialib-Admin-${{github.ref_name}}-windows.zip
       - name: Cleanup
-    	  shell: pwsh
-      	env:
-      	  PFX_PATH: ${{ steps.create-pfx.outputs.PFX_PATH }}
-    	  run: |
-      	  Remove-Item -Path $env:PFX_PATH;
+        run: |
+           Remove-Item -Path ${{ steps.create-pfx.outputs.PFX_PATH }};
   
  # build-and-release-macos:
  #   runs-on: macos-latest
