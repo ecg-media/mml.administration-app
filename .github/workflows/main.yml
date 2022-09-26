@@ -80,6 +80,23 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+      - name: Prepare sign key
+        id: create-pfx
+        shell: pwsh
+    	  env:
+      	 PFX_CONTENT: ${{ secrets.SIGN_KEY }}
+        run: |
+           $pfxPath = Join-Path -Path $env:RUNNER_TEMP -ChildPath "ecg_sign.pfx";
+           $encodedBytes = [System.Convert]::FromBase64String($env:PFX_CONTENT);
+           Set-Content $pfxPath -Value $encodedBytes -AsByteStream;
+           Write-Output "::set-output name=PFX_PATH::$pfxPath";
+      - name: Setup Version
+        uses: mad9000/actions-find-and-replace-string@2
+        id: versioning
+        with:
+          source: ${{ github.ref_name }}
+          find: '-ecg'
+          replace: '.0'      
       - name: Install project dependencies
         run: flutter pub get
       - name: Generate intermediates
@@ -91,15 +108,30 @@ jobs:
       - name: Build artifacts
         run: |
           flutter build windows --release
-          flutter pub run msix:create
-          mv  build/windows/runner/Release/mml_admin.msix build/windows/runner/Release/ECG-Medialib-Admin-${{github.ref_name}}.msix 
+          flutter pub run msix:create --version ${{ steps.versioning.outputs.value }} -c ${{ steps.create-pfx.outputs.PFX_PATH }} -p ${{ secrets.SIGN_PASS }} -u ECG -b ${{ secrets.SIGN_SUB }}
+          mkdir rel
+          echo "Before installing app. Install the publisher public key in your Computer Certmanager as Trusted CA Cert, so the publisher will be trusted on your machine." > rel/README_FIRST.txt
+          cp ecg_sign.cer rel/ecg_sign.cer
+          mv  build/windows/runner/Release/mml_admin.msix rel/ECG-Medialib-Admin-${{github.ref_name}}.msix
+      - name: Archive Release
+        uses: thedoctor0/zip-release@master
+        with:
+          type: 'zip'
+          filename: ECG-Medialib-Admin-${{github.ref_name}}-windows.zip
+          directory: rel
       - name: Windows Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/windows/runner/Release/ECG-Medialib-Admin-${{github.ref_name}}.msix 
+          files: rel/ECG-Medialib-Admin-${{github.ref_name}}-windows.zip
+      - name: Cleanup
+    	  shell: pwsh
+      	env:
+      	  PFX_PATH: ${{ steps.create-pfx.outputs.PFX_PATH }}
+    	  run: |
+      	  Remove-Item -Path $env:PFX_PATH;
   
  # build-and-release-macos:
  #   runs-on: macos-latest
