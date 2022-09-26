@@ -81,13 +81,16 @@ jobs:
         with:
           channel: 'stable'
       - name: Prepare sign key
+        env:
+           PFX_CONTENT: ${{ secrets.BASE64_PFX_CONTENT }}
         run: |
            $pfxPath = Join-Path -Path $env:RUNNER_TEMP -ChildPath "ecg_sign.pfx";
-           $encodedBytes = [System.Convert]::FromBase64String(${{ secrets.SIGN_KEY }});
+           $encodedBytes = [System.Convert]::FromBase64String($env:PFX_CONTENT);
            Set-Content $pfxPath -Value $encodedBytes -AsByteStream;
            Write-Output "::set-output name=PFX_PATH::$pfxPath";
         id: create-pfx
         shell: pwsh
+        
       - name: Setup Version
         uses: mad9000/actions-find-and-replace-string@2
         id: versioning
