@@ -86,7 +86,7 @@ jobs:
         run: |
            $pfxPath = Join-Path -Path $env:RUNNER_TEMP -ChildPath "ecg_sign.pfx";
            $encodedBytes = [System.Convert]::FromBase64String($env:PFX_CONTENT);
-           Set-Content $pfxPath -Value $encodedBytes -AsByteStream;
+           [IO.File]::WriteAllBytes($pfxPath, $encodedBytes)
            Write-Output "::set-output name=PFX_PATH::$pfxPath";
         id: create-pfx
         shell: pwsh
