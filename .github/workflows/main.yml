@@ -16,7 +16,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      - run: git fetch --tags -f
       # Runs a set of commands using the runners shell
       - name: Customizing
         run: |
@@ -74,9 +73,6 @@ jobs:
     needs: [prepare]
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
-        with:
-          name: ECG-Medialib-Admin-Custom
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
@@ -90,14 +86,9 @@ jobs:
            Write-Output "::set-output name=PFX_PATH::$pfxPath";
         id: create-pfx
         shell: pwsh
-        
-      - name: Setup Version
-        uses: mad9000/actions-find-and-replace-string@2
-        id: versioning
+      - uses: actions/download-artifact@v3
         with:
-          source: ${{ github.ref_name }}
-          find: '-ecg'
-          replace: '.0'      
+          name: ECG-Medialib-Admin-Custom
       - name: Install project dependencies
         run: flutter pub get
       - name: Generate intermediates
@@ -108,8 +99,10 @@ jobs:
         run: flutter config --enable-windows-desktop
       - name: Build artifacts
         run: |
+          $version = ${{ steps.versioning.outputs.value }}
+          $ver_dump = $version.replace('-ecg', '.0')
           flutter build windows --release
-          flutter pub run msix:create --version ${{ steps.versioning.outputs.value }} -c ${{ steps.create-pfx.outputs.PFX_PATH }} -p ${{ secrets.SIGN_PASS }} -u ECG -b ${{ secrets.SIGN_SUB }}
+          flutter pub run msix:create --version $ver_dump -c ${{ steps.create-pfx.outputs.PFX_PATH }} -p ${{ secrets.SIGN_PASS }} -u ECG -b ${{ secrets.SIGN_SUB }}
           mkdir rel
           echo "Before installing app. Install the publisher public key in your Computer Certmanager as Trusted CA Cert, so the publisher will be trusted on your machine." > rel/README_FIRST.txt
           cp ecg_sign.cer rel/ecg_sign.cer
