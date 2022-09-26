@@ -21,13 +21,11 @@ jobs:
         run: |
           chmod +x customize
           ./customize
-      - name: Tar files
-        run: tar -cvf mml.administration-app.tar .
       - name: Artefact customized version
         uses: actions/upload-artifact@v3
         with:
           name: ECG-Medialib-Admin-Custom
-          path: mml.administration-app.tar
+          path: mml.administration-app
         
   build-and-release-linux:
     # TODO create linux rpm and debian packages
