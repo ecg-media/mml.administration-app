@@ -38,5 +38,5 @@ jobs:
       uses: ncipollo/release-action@v1
       if: ${{ !endsWith( steps.latest-tag.outputs.tag, '-ecg' ) }}
       with:
-        tag: ${{ steps.get-latest-tag-semver.outputs.tag }}-ecg
+        tag: ${{ steps.latest-tag.outputs.tag }}-ecg
         token: ${{ secrets.SYNC_PAT }}
