@@ -19,8 +19,12 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Customizing
         run: |
+          version="${{ github.ref_name }}"
+          ver_dump=$(echo "${version/-ecg/''}")
           chmod +x customize
           ./customize
+          sed -i -E "s/version: [0-9]+.[0-9]+.[0-9]+\+[0-9]+/version: $ver_dump+${{github.run_number}}/" "./mml.administration-app/pubspec.yaml"
+          sed -i -E "s/#define VERSION_AS_STRING \"1.0.0\"/#define VERSION_AS_STRING \"$ver_dump\"/" "./mml.administration-app/windows/runner/Runner.rc"
       - name: Artefact customized version
         uses: actions/upload-artifact@v3
         with:
