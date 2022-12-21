@@ -162,7 +162,7 @@ jobs:
             --icon-size 130 \
             --text-size 14 \
             --icon "ECG Mediathek.app" 260 250 \
-            --hide-extension "<YOUR-APP-NAME>.app" \
+            --hide-extension "ECG Mediathek.app" \
             --app-drop-link 540 250 \
             --hdiutil-quiet \
             "ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg" \
