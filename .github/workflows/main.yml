@@ -166,6 +166,7 @@ jobs:
             --hdiutil-quiet \
             "ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg" \
             "ECG Mediathek.app"
+          mkdir rel
           cp -R "ECG Mediathek.app" "rel/ECG-Medialib-Admin-${{github.ref_name}}-macos.app"
       - name: Archive Release
         uses: thedoctor0/zip-release@master
