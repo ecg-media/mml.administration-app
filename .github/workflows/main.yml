@@ -180,4 +180,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: rel/ECG-Medialib-Admin-${{github.ref_name}}-macos.app
+          files: build/macos/Build/Products/Release/rel/ECG-Medialib-Admin-${{github.ref_name}}-macos.app
