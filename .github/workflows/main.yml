@@ -153,9 +153,8 @@ jobs:
         run: |
           echo "Install create-dmg"
           brew install create-dmg
-          ls
           cd $MACOS_APP_RELEASE_PATH
-
+          ls
           create-dmg \
             --volname "<YOUR-APP-NAME>" \
             --window-pos 200 120 \
