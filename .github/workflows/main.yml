@@ -166,11 +166,11 @@ jobs:
             --hdiutil-quiet \
             "ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg" \
             "ECG Mediathek.app"
-          ls
+          cp "ECG Mediathek.app" "ECG-Medialib-Admin-${{github.ref_name}}-macos.app"
       - name: macOS Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: "build/macos/Build/Products/Release/ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg"
+          files: "build/macos/Build/Products/Release/ECG-Medialib-Admin-${{github.ref_name}}-macos.app"
