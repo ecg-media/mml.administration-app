@@ -166,18 +166,10 @@ jobs:
             --hdiutil-quiet \
             "ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg" \
             "ECG Mediathek.app"
-          mkdir rel
-          cp -R "ECG Mediathek.app" "rel/ECG-Medialib-Admin-${{github.ref_name}}-macos.app"
-      - name: Archive Release
-        uses: thedoctor0/zip-release@master
-        with:
-          type: 'zip'
-          filename: ECG-Medialib-Admin-${{github.ref_name}}-macos.zip
-          directory: build/macos/Build/Products/Release/rel
       - name: macOS Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/macos/Build/Products/Release/rel/ECG-Medialib-Admin-${{github.ref_name}}-macos.zip
+          files: build/macos/Build/Products/Release/ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg
