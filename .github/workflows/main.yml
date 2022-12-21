@@ -166,7 +166,7 @@ jobs:
             --hdiutil-quiet \
             "ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg" \
             "ECG Mediathek.app"
-          cp "ECG Mediathek.app" "ECG-Medialib-Admin-${{github.ref_name}}-macos.app"
+          cp -R "ECG Mediathek.app" "ECG-Medialib-Admin-${{github.ref_name}}-macos.app"
       - name: macOS Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
