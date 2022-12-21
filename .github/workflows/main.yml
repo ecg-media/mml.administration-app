@@ -154,7 +154,6 @@ jobs:
           echo "Install create-dmg"
           brew install create-dmg
           cd $MACOS_APP_RELEASE_PATH
-          ls
           create-dmg \
             --volname "ECG Mediathek" \
             --window-pos 200 120 \
@@ -167,10 +166,11 @@ jobs:
             --hdiutil-quiet \
             "ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg" \
             "ECG Mediathek.app"
+          ls
       - name: macOS Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: $MACOS_APP_RELEASE_PATH/ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg
+          files: ${{MACOS_APP_RELEASE_PATH}}/ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg
