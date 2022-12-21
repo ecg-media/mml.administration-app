@@ -173,4 +173,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: ${{MACOS_APP_RELEASE_PATH}}/ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg
+          files: "build/macos/Build/Products/Release/ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg"
