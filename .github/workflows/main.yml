@@ -156,17 +156,17 @@ jobs:
           cd $MACOS_APP_RELEASE_PATH
           ls
           create-dmg \
-            --volname "<YOUR-APP-NAME>" \
+            --volname "ECG Mediathek" \
             --window-pos 200 120 \
             --window-size 800 529 \
             --icon-size 130 \
             --text-size 14 \
-            --icon "<YOUR-APP-NAME>.app" 260 250 \
+            --icon "ECG Mediathek.app" 260 250 \
             --hide-extension "<YOUR-APP-NAME>.app" \
             --app-drop-link 540 250 \
             --hdiutil-quiet \
             "ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg" \
-            "<YOUR-APP-NAME>.app"
+            "ECG Mediathek.app"
       - name: macOS Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
