@@ -149,27 +149,27 @@ jobs:
         run: flutter config --enable-macos-desktop
       - name: Build artifacts
         run: flutter build macos --release
-      #- name: Codesign executable
-      #  env:
-      #    MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
-      #    MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
-      #    APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-      #  run: |
-      #    echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
-      #    echo "Create Keychain"
-      #    security create-keychain -p "$MACOS_CERTIFICATE_PWD" build.keychain
-      #    echo "Assign to Login Keychain"
-      #    security default-keychain -s build.keychain
-      #    echo "Unlock the Login Keychain"
-      #    security unlock-keychain -p "$MACOS_CERTIFICATE_PWD" build.keychain
-      #    echo "Import certificate"
-      #    security import certificate.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
-      #    echo "Set Key Partition"
-      #    security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CERTIFICATE_PWD" build.keychain
-      #    echo "Find Identity"
-      #    security find-identity
-      #    echo "Sign the app"
-      #    /usr/bin/codesign --force --deep -s $APPLE_TEAM_ID "./$MACOS_APP_RELEASE_PATH/ECG Mediathek.app"
+      - name: Codesign executable
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
+          echo "Create Keychain"
+          security create-keychain -p "$MACOS_CERTIFICATE_PWD" build.keychain
+          echo "Assign to Login Keychain"
+          security default-keychain -s build.keychain
+          echo "Unlock the Login Keychain"
+          security unlock-keychain -p "$MACOS_CERTIFICATE_PWD" build.keychain
+          echo "Import certificate"
+          security import certificate.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
+          echo "Set Key Partition"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CERTIFICATE_PWD" build.keychain
+          echo "Find Identity"
+          security find-identity
+          echo "Sign the app"
+          /usr/bin/codesign --force --deep -s $APPLE_TEAM_ID "./$MACOS_APP_RELEASE_PATH/ECG Mediathek.app"
       - name: Create a dmg
         run: |
           echo "Install create-dmg"
