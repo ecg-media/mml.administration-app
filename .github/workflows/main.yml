@@ -25,6 +25,7 @@ jobs:
           ./customize
           sed -i -E "s/version: [0-9]+.[0-9]+.[0-9]+\+[0-9]+/version: $ver_dump+${{github.run_number}}/" "./mml.administration-app/pubspec.yaml"
           sed -i -E "s/#define VERSION_AS_STRING \"1.0.0\"/#define VERSION_AS_STRING \"$ver_dump\"/" "./mml.administration-app/windows/runner/Runner.rc"
+          sed -i -E "s/ DEVELOPMENT_TEAM = S79Z2R2WAC;/ DEVELOPMENT_TEAM = ${{ secrets.APPLE_TEAM_ID }};/" "./mml.administration-app/macos/Runner.xcodeproj/project.pbxproj"
       - name: Artefact customized version
         uses: actions/upload-artifact@v3
         with:
@@ -147,15 +148,17 @@ jobs:
           flutter gen-l10n
       - name: Enable macOS build
         run: flutter config --enable-macos-desktop
-      - name: Build artifacts
-        run: flutter build macos --release
-      - name: Codesign executable
+      - name: Prepare keychain
         env:
           MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
           MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          MACOS_PROVISIONING_PROFILE: ${{ secrets.MACOS_PROVISIONING_PROFILE_B64 }}
+          MACOS_PROVISION_PROFILE_UID: ${{ secrets.MACOS_PROVISION_PROFILE_UID }
         run: |
           echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          echo -n "$MACOS_PROVISIONING_PROFILE" | base64 --decode --output $PP_PATH
           echo "Create Keychain"
           security create-keychain -p "$MACOS_CERTIFICATE_PWD" build.keychain
           echo "Assign to Login Keychain"
@@ -168,6 +171,15 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CERTIFICATE_PWD" build.keychain
           echo "Find Identity"
           security find-identity
+          echo "apply provisioning profile"
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+      - name: Build artifacts
+        run: flutter build macos --release
+      - name: Codesign executable
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
           echo "Sign the app"
           /usr/bin/codesign --force --deep -s $APPLE_TEAM_ID "./$MACOS_APP_RELEASE_PATH/ECG Mediathek.app"
       - name: Create a dmg
