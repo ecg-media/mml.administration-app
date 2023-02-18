@@ -127,27 +127,27 @@ jobs:
         run: |
            Remove-Item -Path ${{ steps.create-pfx.outputs.PFX_PATH }};
   
-  build-and-release-macos:
-    runs-on: macos-latest
-    needs: [prepare]
-    env:
-      MACOS_APP_RELEASE_PATH: build/macos/Build/Products/Release
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
-        with:
-          name: ECG-Medialib-Admin-Custom
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: 'stable'
-      - name: Install project dependencies
-        run: flutter pub get
-      - name: Generate intermediates
-        run: |
-          flutter pub run build_runner build --delete-conflicting-outputs
-          flutter gen-l10n
-      - name: Enable macOS build
-        run: flutter config --enable-macos-desktop
+  #build-and-release-macos:
+  #  runs-on: macos-latest
+  #  needs: [prepare]
+  #  env:
+  #    MACOS_APP_RELEASE_PATH: build/macos/Build/Products/Release
+  #  steps:
+  #    - uses: actions/checkout@v3
+  #    - uses: actions/download-artifact@v3
+  #      with:
+  #        name: ECG-Medialib-Admin-Custom
+  #    - uses: subosito/flutter-action@v1
+  #      with:
+  #        channel: 'stable'
+  #    - name: Install project dependencies
+  #      run: flutter pub get
+  #    - name: Generate intermediates
+  #      run: |
+  #        flutter pub run build_runner build --delete-conflicting-outputs
+  #        flutter gen-l10n
+  #    - name: Enable macOS build
+  #      run: flutter config --enable-macos-desktop
      # - name: Prepare keychain
      #   env:
      #     MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
@@ -174,35 +174,35 @@ jobs:
      #     echo "apply provisioning profile"
      #     mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
      #     cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-      - name: Build artifacts
-        run: flutter build macos --release
+#      - name: Build artifacts
+ #       run: flutter build macos --release
      # - name: Codesign executable
      #   env:
      #     APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
      #   run: |
      #     echo "Sign the app"
      #     /usr/bin/codesign --force --deep -s $APPLE_TEAM_ID "./$MACOS_APP_RELEASE_PATH/ECG Mediathek.app"
-      - name: Create a dmg
-        run: |
-          echo "Install create-dmg"
-          brew install create-dmg
-          cd $MACOS_APP_RELEASE_PATH
-          create-dmg \
-            --volname "ECG Mediathek" \
-            --window-pos 200 120 \
-            --window-size 800 529 \
-            --icon-size 130 \
-            --text-size 14 \
-            --icon "ECG Mediathek.app" 260 250 \
-            --hide-extension "ECG Mediathek.app" \
-            --app-drop-link 540 250 \
-            --hdiutil-quiet \
-            "ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg" \
-            "ECG Mediathek.app"
-      - name: macOS Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: build/macos/Build/Products/Release/ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg
+   #   - name: Create a dmg
+  #      run: |
+     #     echo "Install create-dmg"
+    #      brew install create-dmg
+      #    cd $MACOS_APP_RELEASE_PATH
+       #   create-dmg \
+        #    --volname "ECG Mediathek" \
+         #   --window-pos 200 120 \
+          #  --window-size 800 529 \
+          #  --icon-size 130 \
+          #  --text-size 14 \
+          #  --icon "ECG Mediathek.app" 260 250 \
+          #  --hide-extension "ECG Mediathek.app" \
+          #  --app-drop-link 540 250 \
+          #  --hdiutil-quiet \
+          #  "ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg" \
+          #  "ECG Mediathek.app"
+    #  - name: macOS Release
+    #    uses: softprops/action-gh-release@v1
+    #    if: startsWith(github.ref, 'refs/tags/')
+    #    env:
+    #      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #    with:
+    #      files: build/macos/Build/Products/Release/ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg
