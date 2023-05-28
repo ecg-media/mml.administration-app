@@ -104,6 +104,7 @@ jobs:
         run: |
           $version = "${{ github.ref_name }}"
           $ver_dump = $version.replace('-ecg', '.0')
+          echo "${{ secrets.SIGN_SUB }}"
           flutter build windows --release
           dart run msix:create --version $ver_dump --install-certificate false -c ${{ steps.create-pfx.outputs.PFX_PATH }} -p ${{ secrets.SIGN_PASS }} -u ECG -b ${{ secrets.SIGN_SUB }}
           mkdir rel
