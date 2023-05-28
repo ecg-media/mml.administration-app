@@ -105,7 +105,7 @@ jobs:
           $version = "${{ github.ref_name }}"
           $ver_dump = $version.replace('-ecg', '.0')
           flutter build windows --release
-          flutter pub run msix:create --version $ver_dump --install-certificate false -c ${{ steps.create-pfx.outputs.PFX_PATH }} -p ${{ secrets.SIGN_PASS }} -u ECG -b ${{ secrets.SIGN_SUB }}
+          dart run msix:create --version $ver_dump --install-certificate false -c ${{ steps.create-pfx.outputs.PFX_PATH }} -p ${{ secrets.SIGN_PASS }} -u ECG -b ${{ secrets.SIGN_SUB }}
           mkdir rel
           echo "Before installing app. Install the publisher public key in your Computer Certmanager as Trusted CA Cert, so the publisher will be trusted on your machine." > rel/README_FIRST.txt
           cp ecg_sign.cer rel/ecg_sign.cer
