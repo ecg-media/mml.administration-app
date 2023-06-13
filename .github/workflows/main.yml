@@ -154,7 +154,7 @@ jobs:
           MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           MACOS_PROVISIONING_PROFILE: ${{ secrets.MACOS_PROVISIONING_PROFILE_B64 }}
-          MACOS_PROVISION_PROFILE_UID: ${{ secrets.MACOS_PROVISION_PROFILE_UID }
+          MACOS_PROVISION_PROFILE_UID: ${{ secrets.MACOS_PROVISION_PROFILE_UID }}
         run: |
           echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
           PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
