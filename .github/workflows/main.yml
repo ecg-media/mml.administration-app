@@ -174,7 +174,9 @@ jobs:
           echo "apply provisioning profile"
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "Build release"
+          cat ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
+      - name: Build app 
+        run: |
           flutter build macos --release
       - name: Codesign executable
         env:
