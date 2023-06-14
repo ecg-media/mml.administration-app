@@ -174,9 +174,8 @@ jobs:
           echo "apply provisioning profile"
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-          ls ~/Library/MobileDevice/Provisioning\ Profiles
-      - name: Build artifacts
-        run: flutter build macos --release
+          echo "Build release"
+          flutter build macos --release
       - name: Codesign executable
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
