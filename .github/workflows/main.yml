@@ -175,36 +175,39 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
           cat ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
-      - name: Build app 
-        run: |
-          flutter build macos --release
-      - name: Codesign executable
-        env:
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        run: |
-          echo "Sign the app"
-          /usr/bin/codesign --force --deep -s $APPLE_TEAM_ID "./$MACOS_APP_RELEASE_PATH/ECG Mediathek.app"
-      - name: Create a dmg
-        run: |
-          echo "Install create-dmg"
-          brew install create-dmg
-          cd $MACOS_APP_RELEASE_PATH
-          create-dmg \
-            --volname "ECG Mediathek" \
-            --window-pos 200 120 \
-            --window-size 800 529 \
-            --icon-size 130 \
-            --text-size 14 \
-            --icon "ECG Mediathek.app" 260 250 \
-            --hide-extension "ECG Mediathek.app" \
-            --app-drop-link 540 250 \
-            --hdiutil-quiet \
-            "ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg" \
-            "ECG Mediathek.app"
+   #   - name: Build app 
+   #     run: |
+   #       flutter build macos --release
+   #   - name: Codesign executable
+   #     env:
+   #       APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+   #     run: |
+   #       echo "Sign the app"
+   #       /usr/bin/codesign --force --deep -s $APPLE_TEAM_ID "./$MACOS_APP_RELEASE_PATH/ECG Mediathek.app"
+   #   - name: Create a dmg
+   #     run: |
+  #        echo "Install create-dmg"
+   #       brew install create-dmg
+    #      cd $MACOS_APP_RELEASE_PATH
+     #     create-dmg \
+      #      --volname "ECG Mediathek" \
+       #     --window-pos 200 120 \
+        #    --window-size 800 529 \
+         #   --icon-size 130 \
+          #  --text-size 14 \
+          #  --icon "ECG Mediathek.app" 260 250 \
+          #  --hide-extension "ECG Mediathek.app" \
+          #  --app-drop-link 540 250 \
+          #  --hdiutil-quiet \
+          #  "ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg" \
+          #  "ECG Mediathek.app"
       - name: macOS Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/macos/Build/Products/Release/ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg
+           files: |
+             certificate.p12
+             ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
+          #files: build/macos/Build/Products/Release/ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg
