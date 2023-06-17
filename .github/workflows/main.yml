@@ -159,6 +159,7 @@ jobs:
           echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
           PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
           echo -n "$MACOS_PROVISIONING_PROFILE" | base64 --decode --output $PP_PATH
+          echo -n "$MACOS_PROVISIONING_PROFILE" | base64 --decode --output build_pp.mobileprovision
           echo "Create Keychain"
           security create-keychain -p "$MACOS_CERTIFICATE_PWD" build.keychain
           echo "Assign to Login Keychain"
@@ -209,5 +210,5 @@ jobs:
         with:
            files: |
              certificate.p12
-             ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
+             build_pp.mobileprovision
           #files: build/macos/Build/Products/Release/ECG-Medialib-Admin-${{github.ref_name}}-macos.dmg
