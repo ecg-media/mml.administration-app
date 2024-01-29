@@ -109,7 +109,7 @@ jobs:
           mkdir rel
           echo "Before installing app. Install the publisher public key in your Computer Certmanager as Trusted CA Cert, so the publisher will be trusted on your machine." > rel/README_FIRST.txt
           cp ecg_sign.cer rel/ecg_sign.cer
-          mv  build/windows/runner/Release/mml_admin.msix rel/ECG-Medialib-Admin-${{github.ref_name}}.msix
+          mv  build/windows/x64/runner/Release/mml_admin.msix rel/ECG-Medialib-Admin-${{github.ref_name}}.msix
       - name: Archive Release
         uses: thedoctor0/zip-release@master
         with:
