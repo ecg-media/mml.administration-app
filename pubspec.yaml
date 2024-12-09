@@ -47,7 +47,7 @@ dependencies:
   signalr_pure: ^1.1.0
   rive: ^0.13.8
   file_picker: ^8.0.5
-  mime: ^1.0.5
+  mime: ^2.0.0
   http_parser: ^4.0.2
   package_info_plus: ^8.0.0
   calendar_date_picker2: ^1.1.4
