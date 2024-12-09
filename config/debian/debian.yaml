@@ -1,10 +1,10 @@
 flutter_app: 
-  command: mml_app
+  command: ecg_media
   arch: x64
   parent: /usr/local/lib
 
 control:
-  Package: My-Media-Lib
+  Package: ECG-Mediathek
   Version: 1.0.0
   Architecture: amd64
   Essential: no
