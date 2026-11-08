@@ -38,7 +38,6 @@ class GroupEditDialogViewModel extends ChangeNotifier {
   /// Map of errors from the server.
   Map<String, List<String>> errors = {};
 
-
   /// Initializes the ViewModel and loads the group with the given [groupId] or
   /// creates an new group model if the id is not passed.
   Future<bool> init(BuildContext context, String? groupId) async {
@@ -90,7 +89,7 @@ class GroupEditDialogViewModel extends ChangeNotifier {
 
   /// Clears the errors from the backend for the field with the passed
   /// [fieldName].
-  clearBackendErrors(String fieldName) {
+  void clearBackendErrors(String fieldName) {
     errors.remove(fieldName);
   }
 

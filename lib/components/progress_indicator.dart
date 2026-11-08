@@ -5,14 +5,12 @@ import 'package:mml_admin/services/router.dart';
 ///
 /// This method can be used to show an overlay for asynchronous actions and
 /// prevent user interaction during requests.
-showProgressIndicator() {
+void showProgressIndicator() {
   showDialog(
     barrierDismissible: false,
     context: RouterService.getInstance().navigatorKey.currentContext!,
     builder: (BuildContext context) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     },
   );
 }

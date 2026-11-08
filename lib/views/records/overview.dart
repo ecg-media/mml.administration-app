@@ -39,6 +39,7 @@ class RecordsScreen extends StatelessWidget {
             return AsyncListView(
               subfilter: RecordTagFilter(
                 isFolderView: vm.isFolderView,
+                isSyncSupported: vm.isSyncSupported,
               ),
               navState: vm.navigationState,
               moveUp: (subFilter) {
@@ -52,12 +53,16 @@ class RecordsScreen extends StatelessWidget {
                 ActionButton(
                   icon: const Icon(Symbols.drive_folder_upload),
                   onPressed: () async {
-                    String? selected =
-                        await FilePicker.platform.getDirectoryPath(
-                      lockParentWindow: true,
-                      dialogTitle: locales.uploadFolder,
-                    );
+                    String? selected = await FilePicker.platform
+                        .getDirectoryPath(
+                          lockParentWindow: true,
+                          dialogTitle: locales.uploadFolder,
+                        );
                     if (selected == null) {
+                      return;
+                    }
+
+                    if (!context.mounted) {
                       return;
                     }
 
@@ -76,15 +81,15 @@ class RecordsScreen extends StatelessWidget {
                 ActionButton(
                   icon: const Icon(Symbols.file_upload),
                   onPressed: () async {
-                    FilePickerResult? selected =
-                        await FilePicker.platform.pickFiles(
-                      allowMultiple: true,
-                      type: FileType.custom,
-                      allowedExtensions: ['mp3'],
-                      dialogTitle: locales.uploadFiles,
-                    );
+                    FilePickerResult? selected = await FilePicker.platform
+                        .pickFiles(
+                          allowMultiple: true,
+                          type: FileType.custom,
+                          allowedExtensions: ['mp3'],
+                          dialogTitle: locales.uploadFiles,
+                        );
 
-                    if (selected == null) {
+                    if (selected == null || !context.mounted) {
                       return;
                     }
 
@@ -101,28 +106,18 @@ class RecordsScreen extends StatelessWidget {
                   },
                 ),
               ],
-              deleteItems: <ModelBase>(List<ModelBase> items) => vm.delete(
-                items,
-                context,
-              ),
+              deleteItems: <T>(List<T> items) => vm.delete(items, context),
               editItem: (ModelBase item, Subfilter? subfilter) async {
                 if (item is RecordFolder) {
                   vm.navigationState.path = item.getIdentifier();
-                  (subfilter as ID3TagFilter)[ID3TagFilters.date] =
-                      DateTimeRange(
-                    start: DateTime(
-                      item.year,
-                      item.month ?? 1,
-                      item.day ?? 1,
-                    ),
+                  (subfilter
+                      as ID3TagFilter)[ID3TagFilters.date] = DateTimeRange(
+                    start: DateTime(item.year, item.month ?? 1, item.day ?? 1),
                     end: DateTime(
                       item.year,
                       item.month ?? 12,
                       item.day ??
-                          DateUtils.getDaysInMonth(
-                            item.year,
-                            item.month ?? 12,
-                          ),
+                          DateUtils.getDaysInMonth(item.year, item.month ?? 12),
                     ),
                   );
                   return true;
@@ -138,31 +133,30 @@ class RecordsScreen extends StatelessWidget {
                   },
                 );
               },
-              loadData: ({
-                String? filter,
-                int? offset,
-                int? take,
-                dynamic subfilter,
-              }) {
-                WidgetsBinding.instance.addPostFrameCallback(
-                  (_) {
-                    if (!(subfilter as ID3TagFilter).isGrouped) {
-                      vm.navigationState.path = null;
-                    }
-                  },
-                );
+              loadData:
+                  ({
+                    String? filter,
+                    int? offset,
+                    int? take,
+                    dynamic subfilter,
+                  }) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (!(subfilter as ID3TagFilter).isGrouped) {
+                        vm.navigationState.path = null;
+                      }
+                    });
 
-                return vm.load(
-                  filter: filter,
-                  offset: offset,
-                  take: take,
-                  subfilter: subfilter,
-                );
-              },
+                    return vm.load(
+                      filter: filter,
+                      offset: offset,
+                      take: take,
+                      subfilter: subfilter,
+                    );
+                  },
               availableTags: vm.groups,
               onChangedAvailableTags: (item, changedTags) =>
                   vm.groupsChanged(item, changedTags),
-              assignItems: <ModelBase>(List<ModelBase> items) async {
+              assignItems: <T>(List<T> items) async {
                 var selectedGroups = await showDialog(
                   barrierDismissible: false,
                   context: context,
@@ -186,10 +180,17 @@ class RecordsScreen extends StatelessWidget {
                 );
                 return true;
               },
-              lockItems: <ModelBase>(List<ModelBase> items) async {
-                await vm.lockRecords(
-                  items,
-                );
+              shareItems: vm.isShareSupported
+                  ? <T>(List<T> items) => vm.share(items, context)
+                  : null,
+              syncItems: vm.isSyncSupported
+                  ? <T>(List<T> items) => vm.synchronize(items, context)
+                  : null,
+              revokeSyncItems: vm.isSyncSupported
+                  ? <T>(List<T> items) => vm.revokeSync(items, context)
+                  : null,
+              lockItems: <T>(List<T> items) async {
+                await vm.lockRecords(items);
                 return true;
               },
               enableFastActionSwitch: true,
